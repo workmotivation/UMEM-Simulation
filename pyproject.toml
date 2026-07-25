@@ -1,0 +1,126 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "umem-evolutionary-workbench"
+version = "0.1.0"
+description = "An open-source research workbench for simulating the evolution of motivation-like behavioural allocation propensities in abstract agents."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+# TODO before publishing: replace these placeholder author details.
+# The email must remain a syntactically valid address or the build will fail.
+authors = [
+    { name = "AUTHOR_NAME_HERE", email = "author@example.com" },
+]
+maintainers = [
+    { name = "AUTHOR_NAME_HERE", email = "author@example.com" },
+]
+keywords = [
+    "evolution",
+    "agent-based-model",
+    "motivation",
+    "behavioural-ecology",
+    "life-history",
+    "simulation",
+    "computational-biology",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Life",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+    "pydantic>=2.5",
+    "pyyaml>=6.0",
+    "openpyxl>=3.1",
+]
+
+[project.optional-dependencies]
+streamlit = ["streamlit>=1.30"]
+desktop = ["PySide6>=6.5"]
+excel-fast = ["xlsxwriter>=3.1"]
+images = ["pillow>=10.0"]
+test = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "pillow>=10.0",
+    "streamlit>=1.30",
+]
+build = ["pyinstaller>=6.0"]
+all = [
+    "umem-evolutionary-workbench[streamlit,desktop,excel-fast,images]",
+]
+dev = [
+    "umem-evolutionary-workbench[all,test,build]",
+    "ruff>=0.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/ORGANISATION_HERE/umem-evolutionary-workbench"
+Repository = "https://github.com/ORGANISATION_HERE/umem-evolutionary-workbench"
+Issues = "https://github.com/ORGANISATION_HERE/umem-evolutionary-workbench/issues"
+Documentation = "https://github.com/ORGANISATION_HERE/umem-evolutionary-workbench/tree/main/docs"
+
+[project.scripts]
+umem-workbench = "umem_workbench.cli:main"
+
+[project.gui-scripts]
+umem-workbench-desktop = "umem_workbench.ui_desktop.app:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+umem_workbench = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q --strict-markers"
+markers = [
+    "slow: long-running tests",
+    "ui: tests that exercise the Streamlit interface",
+]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B"]
+ignore = [
+    "E501",  # line length is handled by the formatter
+    "B008",  # function calls in argument defaults are used deliberately here
+    # Deliberate, not oversights:
+    "N806",  # Mathematical notation in the engine (T for task count, K for
+             # carrying capacity) mirrors the model reference and is clearer
+             # than a lowercase rename would be.
+    "N818",  # ScenarioNotRunnable and UnsafeOutputDirectory read better at the
+             # call site than the mandated "...Error" suffix.
+    "B905",  # zip() without strict=: the paired sequences are constructed
+             # together immediately above each call and cannot differ in length.
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["N802"]
+# Qt dictates the camelCase method names on QWidget subclasses.
+"src/umem_workbench/ui_desktop/*" = ["N802"]
